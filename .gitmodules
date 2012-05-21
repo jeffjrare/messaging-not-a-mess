@@ -1,3 +1,6 @@
 [submodule "cass-php-client"]
 	path = cass-php-client
 	url = https://github.com/kallaspriit/Cassandra-PHP-Client-Library.git
+[submodule "php/cass-php-client"]
+	path = php/cass-php-client
+	url = https://github.com/kallaspriit/Cassandra-PHP-Client-Library.git
