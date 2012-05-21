@@ -1,2 +1,10 @@
 --
+cassandra:
+  host: 127.0.0.1
+  port: 9160
 
+default:
+  keyspace: mnam
+
+php:
+  client_include: ./cass-php-client/Cassandra.php
