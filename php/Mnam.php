@@ -1,5 +1,7 @@
 <?php
 /**
+ * Mnam: Messaging, not a mess!
+ * PHP library port
  * 
  * @author  jeffgirard
  * 
@@ -22,6 +24,11 @@ class Mnam{
     return $this->_cassandraInst;
   }
 
+  /**
+   * Will create Cassandra required columnFamily required for a group
+   * @param string $groupName
+   * @param Array  $columns
+   */
   public static function InitGroup($groupName, Array $columns)
   {
     self::_Init();
@@ -29,6 +36,12 @@ class Mnam{
     self::$_MnamInst->getCassandra()->createStandardColumnFamily(self::$_MnamInst->_config['default']['keyspace'], $groupName, $columns);
   }
 
+  /**
+   * Write a message into group through matching Cassandra columnFamily
+   * @param string $groupName 
+   * @param string|array $key       
+   * @param Array  $fields    
+   */
   public static function Write($groupName, $key, Array $fields)
   {
     self::_Init();
@@ -38,6 +51,11 @@ class Mnam{
     self::$_MnamInst->getCassandra()->set("{$groupName}.{$key}", $fields);
   }
 
+  /**
+   * Write many message into group through matching Cassandra columnFamily
+   * @param string $groupName 
+   * @param Array  $columns   
+   */
   public static function WriteMany($groupName, Array $columns)
   {
     foreach($columns as $key => $fields){
@@ -45,6 +63,11 @@ class Mnam{
     }
   }
 
+  /**
+   * Fetch message from group by it unique key
+   * @param string $groupName 
+   * @param string $key       
+   */
   public static function Read($groupName, $key)
   {
     self::_Init();
@@ -54,11 +77,19 @@ class Mnam{
     return self::$_MnamInst->getCassandra()->get("{$groupName}.{$key}");
   }
 
+  /**
+   * Init a working Mnam instance
+   */
   private static function _Init()
   {
     if(!self::$_MnamInst) self::$_MnamInst = new self();
   }
 
+  /**
+   * Load everything needed to work with messages
+   * - Load yaml config file
+   * - Call Cassandra setup and connection process
+   */
   private function _LoadConfiguration()
   {
     # TODO: Yaml config loading
@@ -77,15 +108,21 @@ class Mnam{
     self::_LoadAndConnectToCass();
   }
 
+  /**
+   * Prepare Cassandra required configuration and connect to node
+   */
   private function _LoadAndConnectToCass()
   {
+    $cassConf = $this->_config['cassandra'];
+    if(!$cassConf) throw new Exception('Missing cassandra config');
+
     $this->_cassandraInst = Cassandra::createInstance(array(
       array(
-        'host' => $this->_config['cassandra']['host'],
-        'port' => $this->_config['cassandra']['port'],
-        'use-framed-transport' => true,
-        'send-timeout-ms' => 1000,
-        'receive-timeout-ms' => 1000
+        'host' => $cassConf['host'],
+        'port' => $cassConf['port'],
+        'use-framed-transport' => $cassConf['use_framed_transport'],
+        'send-timeout-ms' => $cassConf['send_timeout_ms'],
+        'receive-timeout-ms' => $cassConf['receive_timeout_ms']
       )
     ));
 

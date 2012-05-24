@@ -2,6 +2,9 @@
 cassandra:
   host: 127.0.0.1
   port: 9160
+  use_framed_transport: true
+  send_timeout_ms: 1000
+  receive_timeout_ms: 1000
 
 default:
   keyspace: mnam
