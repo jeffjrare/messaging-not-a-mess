@@ -1,39 +1,29 @@
 <?php
+require 'MnamCass.php';
 /**
+ * 
  * Mnam: Messaging, not a mess!
  * PHP library port
+ * 
+ * Static class to send message into specific group, and get it written into Cassandra
  * 
  * @author  jeffgirard
  * 
  */
-
 class Mnam{
 
-  private static $_MnamInst;
-  public $_config;
-  private $_cassandraInst;
-
-  protected function __construct()
-  {
-    $this->_LoadConfiguration();
-    $this->_LoadAndConnectToCass();
-  }
-
-  public function getCassandra()
-  {
-    return $this->_cassandraInst;
-  }
+  private static $_MnamCass;
 
   /**
    * Will create Cassandra required columnFamily required for a group
    * @param string $groupName
    * @param Array  $columns
    */
-  public static function InitGroup($groupName, Array $columns)
+  public static function InitGroup($keyspace, $groupName, Array $columns)
   {
     self::_Init();
 
-    self::$_MnamInst->getCassandra()->createStandardColumnFamily(self::$_MnamInst->_config['default']['keyspace'], $groupName, $columns);
+    self::$_MnamCass->getCassandra()->createStandardColumnFamily($keyspace, $groupName, $columns);
   }
 
   /**
@@ -48,7 +38,12 @@ class Mnam{
 
     if(is_array($key)) $key = implode('.', $key);
 
-    self::$_MnamInst->getCassandra()->set("{$groupName}.{$key}", $fields);
+//    if(self::$_MnamCass->getCassandra()->getConnection()->isOpen()){
+      self::$_MnamCass->getCassandra()->set("{$groupName}.{$key}", $fields);
+
+  //  }else{
+    //  throw new Exception("No fallback implemented yet when cassandra isnt open");
+  //  }
   }
 
   /**
@@ -74,7 +69,7 @@ class Mnam{
 
     if(is_array($key)) $key = implode('.', $key);
 
-    return self::$_MnamInst->getCassandra()->get("{$groupName}.{$key}");
+    return self::$_MnamCass->getCassandra()->get("{$groupName}.{$key}");
   }
 
   /**
@@ -82,56 +77,11 @@ class Mnam{
    */
   private static function _Init()
   {
-    if(!self::$_MnamInst) self::$_MnamInst = new self();
-  }
-
-  /**
-   * Load everything needed to work with messages
-   * - Load yaml config file
-   * - Call Cassandra setup and connection process
-   */
-  private function _LoadConfiguration()
-  {
-    # TODO: Yaml config loading
-    $this->_config = array(
-        'cassandra' => array(
-          'host' => '127.0.0.1',
-          'port' => 9160),
-
-        'default' => array(
-            'keyspace' => 'mnam'),
-
-        'php' => array(
-            'client_include' => 'cass-php-client/Cassandra.php')
-      );
-
-    self::_LoadAndConnectToCass();
-  }
-
-  /**
-   * Prepare Cassandra required configuration and connect to node
-   */
-  private function _LoadAndConnectToCass()
-  {
-    $cassConf = $this->_config['cassandra'];
-    if(!$cassConf) throw new Exception('Missing cassandra config');
-
-    $this->_cassandraInst = Cassandra::createInstance(array(
-      array(
-        'host' => $cassConf['host'],
-        'port' => $cassConf['port'],
-        'use-framed-transport' => $cassConf['use_framed_transport'],
-        'send-timeout-ms' => $cassConf['send_timeout_ms'],
-        'receive-timeout-ms' => $cassConf['receive_timeout_ms']
-      )
-    ));
-
-    $this->_cassandraInst->useKeyspace($this->_config['default']['keyspace']);
-    $this->_cassandraInst->setMaxCallRetries(5);
+    if(!self::$_MnamCass) self::$_MnamCass = new MnamCass();
   }
 }
 
-require_once('cass-php-client/Cassandra.php');
+//require_once('cass-php-client/Cassandra.php');
 
 /*Mnam::InitGroup('login',
   array(
@@ -142,4 +92,24 @@ require_once('cass-php-client/Cassandra.php');
       'index-name' => 'NameIdx'
     )));*/
 
+/*Mnam::InitGroup('sold',
+  array(
+    array(
+      'name' => 'val1',
+      'type' => Cassandra::TYPE_UTF8,
+      'index-type' => Cassandra::INDEX_KEYS, // create secondary index
+      'index-name' => 'val1Idx'
+    ),
+    array(
+      'name' => 'val2',
+      'type' => Cassandra::TYPE_UTF8,
+      'index-type' => Cassandra::INDEX_KEYS, // create secondary index
+      'index-name' => 'val2Idx'
+    )));*/
+
 Mnam::Write('login', 'jeff', array('name' => 'Jeff'));
+Mnam::Write('sold', 'jeff', array('val1' => '1', 'val2' => '2'));
+
+for($i=1;$i<=2000;$i++){
+  Mnam::Write('sold', "jeff{$i}", array('val1' => '1', 'val2' => '2'));
+}
