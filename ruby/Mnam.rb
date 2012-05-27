@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'bundler'
+require 'cassandra'
 require File.expand_path 'ruby/MnamCass.rb'
 
 module Mnam
@@ -9,6 +10,7 @@ module Mnam
 
   def self.write group_name, key, fields
     Mnam.init
+    @mnam_cass.get_cassandra.insert(:login, "5", {'screen_name' => "buttonscat"})
   end
 
   def self.write_many group_name, columns
