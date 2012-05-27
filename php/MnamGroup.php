@@ -1,6 +1,5 @@
 <?php
 require 'MnamCass.php';
-
 /**
  * 
  * Mnam: Messaging, not a mess!

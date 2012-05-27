@@ -1,14 +1,15 @@
 require 'rubygems'
 require 'bundler'
-require File.expand_path 'ruby/MnamCass.rb'
 
-module Mnam
+module MnamGroup
   def self.init_group group_name, columns
     Mnam.init
   end
 
   def self.write group_name, key, fields
     Mnam.init
+
+    puts group_name
   end
 
   def self.write_many group_name, columns
@@ -23,7 +24,7 @@ module Mnam
   private
 
   def self.init
-    @mnam_cass = MnamCass.new unless @mnam_cass
+
   end
 end
 
