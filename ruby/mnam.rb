@@ -1,11 +1,11 @@
 require 'rubygems'
 require 'bundler'
 require 'cassandra'
-require File.expand_path 'ruby/MnamCass.rb'
+require_relative 'mnam_cass'
 
 module Mnam
-  def self.init_group group_name, columns
-    Mnam.init
+  def self.force_mnam_cass val
+    @mnam_cass = val
   end
 
   def self.write group_name, key, fields
