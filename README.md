@@ -28,3 +28,7 @@ Quick list of actual used techies
 - Ruby
 - PHP
 - Cassandra-PHP-Client-Library (https://github.com/kallaspriit/Cassandra-PHP-Client-Library)
+
+Internal notes
+--------------------------
+listing_sold, listing_favorite, listing_followup, listing_forums, listing_welcome, listing_modelo, listing_sale, listing_coach
