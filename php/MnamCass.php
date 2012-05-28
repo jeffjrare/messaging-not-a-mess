@@ -7,11 +7,12 @@
  * @author  jeffgirard
  * 
  */
-class MnamCass{
-
+class MnamCass
+{
   private $_cassInst;
   private $_configFilePath;
   private $_config = array();
+  private $_keyspaceName;
 
   public function __construct($configFilePath=null)
   {
@@ -19,6 +20,11 @@ class MnamCass{
 
     $this->_prepare();
     $this->_connect();
+  }
+
+  public function getKeyspaceName()
+  {
+    return $this->_keyspaceName;
   }
 
   public function getCassandra()
@@ -62,7 +68,8 @@ class MnamCass{
       )
     ));
 
-    $this->_cassInst->useKeyspace($this->_config['default']['keyspace']);
+    $this->_keyspaceName = $this->_config['default']['keyspace'];
+    $this->_cassInst->useKeyspace($this->_keyspaceName);
     $this->_cassInst->setMaxCallRetries(5);
   }
 

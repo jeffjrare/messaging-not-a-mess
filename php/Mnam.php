@@ -10,8 +10,8 @@ require 'MnamCass.php';
  * @author  jeffgirard
  * 
  */
-class Mnam{
-
+class Mnam
+{
   private static $_MnamCass;
 
   public static function ForceMnamCass($mnamCass)
@@ -33,11 +33,12 @@ class Mnam{
 
   /**
    * Write a message into group through matching Cassandra columnFamily
-   * @param string $groupName 
-   * @param string|array $key       
-   * @param Array  $fields    
+   * @param string $groupName is the message group name
+   * @param string|array $key is unique in the message group name
+   * @param Array  $fields
+   * @param datetime $occuredAt
    */
-  public static function Write($groupName, $key, Array $fields)
+  public static function Write($groupName, $key, Array $fields, $occuredAt)
   {
     self::_Init();
 
