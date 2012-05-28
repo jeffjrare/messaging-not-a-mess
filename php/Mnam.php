@@ -14,6 +14,11 @@ class Mnam{
 
   private static $_MnamCass;
 
+  public static function ForceMnamCass($mnamCass)
+  {
+    self::$_MnamCass = $mnamCass;
+  }
+
   /**
    * Will create Cassandra required columnFamily required for a group
    * @param string $groupName

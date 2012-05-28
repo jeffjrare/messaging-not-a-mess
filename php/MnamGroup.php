@@ -17,7 +17,7 @@ class MnamGroup{
 
   public function __construct($groupName, $fieldNames=null)
   {
-    $this->$_name = $groupName;
+    $this->_name = $groupName;
 
     if($fieldNames && is_array($fieldNames)){
       foreach ($fieldNames as $field) $this->addField($field);
@@ -26,7 +26,7 @@ class MnamGroup{
 
   public function addField($fieldName)
   {
-    $this->$_mnamFields[] = array(
+    $this->_mnamFields[] = array(
       'name' => $fieldName,
       'type' => Cassandra::TYPE_UTF8);
   }
