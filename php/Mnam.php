@@ -12,7 +12,7 @@ require 'MnamCass.php';
  */
 class Mnam
 {
-  private static $_MnamCass;
+  public static $_MnamCass;
 
   public static function ForceMnamCass($mnamCass)
   {
@@ -38,7 +38,7 @@ class Mnam
    * @param Array  $fields
    * @param datetime $occuredAt
    */
-  public static function Write($groupName, $key, Array $fields, $occuredAt)
+  public static function Write($groupName, $key, Array $fields, $occuredAt=null)
   {
     self::_Init();
 
@@ -116,6 +116,24 @@ class Mnam
 Mnam::Write('login', 'jeff', array('name' => 'Jeff'));
 Mnam::Write('sold', 'jeff', array('val1' => '1', 'val2' => '2'));
 
+/*
 for($i=1;$i<=2000;$i++){
   Mnam::Write('sold', "jeff{$i}", array('val1' => '1', 'val2' => '2'));
 }
+*/
+
+Mnam::$_MnamCass->getCassandra()->set(
+    'cities.Estonia',
+    array(
+        'Tallinn' => array(
+            'population' => '411980',
+            'comment' => 'Capital of Estonia',
+            'size' => 'big'
+        ),
+        'Tartu' => array(
+            'population' => '98589',
+            'comment' => 'City of good thoughts',
+            'size' => 'medium'
+        )
+    )
+);
