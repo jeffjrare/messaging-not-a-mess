@@ -93,3 +93,19 @@ class MnamCass
     }
   }*/
 }
+$inst = new MnamCass();
+$inst->getCassandra()->set(
+    'cities.Estonia',
+    array(
+        'Tallinn' => array(
+            'population' => '411980',
+            'comment' => 'Capital of Estonia',
+            'size' => 'big'
+        ),
+        'Tartu' => array(
+            'population' => '98589',
+            'comment' => 'City of good thoughts',
+            'size' => 'medium'
+        )
+    )
+);

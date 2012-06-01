@@ -1,5 +1,4 @@
 <?php
-require 'MnamCass.php';
 /**
  * 
  * Mnam: Messaging, not a mess!
@@ -10,6 +9,9 @@ require 'MnamCass.php';
  * @author  jeffgirard
  * 
  */
+
+require 'MnamCass.php';
+
 class Mnam
 {
   public static $_MnamCass;
@@ -27,7 +29,6 @@ class Mnam
   public static function InitGroup($keyspace, $groupName, Array $columns)
   {
     self::_Init();
-
     self::$_MnamCass->getCassandra()->createStandardColumnFamily($keyspace, $groupName, $columns);
   }
 
@@ -45,7 +46,7 @@ class Mnam
     if(is_array($key)) $key = implode('.', $key);
 
 //    if(self::$_MnamCass->getCassandra()->getConnection()->isOpen()){
-      self::$_MnamCass->getCassandra()->set("{$groupName}.{$key}", $fields);
+      return self::$_MnamCass->getCassandra()->set("{$groupName}.{$key}", $fields);
 
   //  }else{
     //  throw new Exception("No fallback implemented yet when cassandra isnt open");
@@ -59,15 +60,19 @@ class Mnam
    */
   public static function WriteMany($groupName, Array $columns)
   {
+    $result = false;
+
     foreach($columns as $key => $fields){
-      self::Write($groupName, $key, $fields);
+      $result = self::Write($groupName, $key, $fields);
     }
+
+    return $result;
   }
 
   /**
    * Fetch message from group by it unique key
    * @param string $groupName 
-   * @param string $key       
+   * @param string $key
    */
   public static function Read($groupName, $key)
   {
@@ -113,6 +118,7 @@ class Mnam
       'index-name' => 'val2Idx'
     )));*/
 
+
 Mnam::Write('login', 'jeff', array('name' => 'Jeff'));
 Mnam::Write('sold', 'jeff', array('val1' => '1', 'val2' => '2'));
 
@@ -122,18 +128,3 @@ for($i=1;$i<=2000;$i++){
 }
 */
 
-Mnam::$_MnamCass->getCassandra()->set(
-    'cities.Estonia',
-    array(
-        'Tallinn' => array(
-            'population' => '411980',
-            'comment' => 'Capital of Estonia',
-            'size' => 'big'
-        ),
-        'Tartu' => array(
-            'population' => '98589',
-            'comment' => 'City of good thoughts',
-            'size' => 'medium'
-        )
-    )
-);
